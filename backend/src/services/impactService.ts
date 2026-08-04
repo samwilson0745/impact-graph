@@ -1,5 +1,5 @@
 import type { Session } from 'neo4j-driver';
-import { getBlastRadiusServices } from '../queries/blastRadius.js';
+import { getBlastRadiusServices, getServiceDependencyEdges } from '../queries/blastRadius.js';
 import { getImpactFootprint } from '../queries/impactFootprint.js';
 import { getServiceById } from '../queries/services.js';
 import { NotFoundError } from '../types/errors.js';
@@ -30,6 +30,7 @@ export async function getBlastRadius(
   const affectedServices = await getBlastRadiusServices(session, serviceId, maxHops);
   const allServiceIds = [serviceId, ...affectedServices.map((s) => s.id)];
   const footprints = await getImpactFootprint(session, allServiceIds);
+  const serviceEdges = await getServiceDependencyEdges(session, allServiceIds);
 
   const apis: ApiImpact[] = [];
   const topicsById = new Map<string, TopicImpact>();
@@ -74,6 +75,7 @@ export async function getBlastRadius(
     service,
     maxHops,
     affectedServices,
+    serviceEdges,
     apis,
     kafkaTopics: [...topicsById.values()].sort((a, b) => a.name.localeCompare(b.name)),
     databases: [...databasesById.values()].sort((a, b) => a.name.localeCompare(b.name)),

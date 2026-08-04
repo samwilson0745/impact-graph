@@ -71,6 +71,7 @@ export interface BlastRadiusResult {
   service: ServiceNode;
   maxHops: number;
   affectedServices: BlastRadiusServiceEntry[];
+  serviceEdges: { from: string; to: string }[];
   apis: ApiImpact[];
   kafkaTopics: TopicImpact[];
   databases: DatabaseImpact[];

@@ -41,3 +41,31 @@ export async function getBlastRadiusServices(
     hop: (record.get('hop') as { toNumber(): number }).toNumber(),
   }));
 }
+
+/**
+ * The induced-subgraph DEPENDS_ON edges among a set of service ids (the
+ * deploying service plus everything in its blast radius) — the graph UI
+ * needs the actual edges to draw the call graph, not just each service's hop
+ * distance. `to` is matched freely and filtered by id afterwards rather than
+ * pre-bound in the pattern, consistent with every other query here.
+ */
+export async function getServiceDependencyEdges(
+  session: Session,
+  serviceIds: string[],
+): Promise<{ from: string; to: string }[]> {
+  if (serviceIds.length === 0) return [];
+
+  const query = `
+    UNWIND $serviceIds AS fromId
+    MATCH (a:Service {id: fromId})-[:DEPENDS_ON]->(b:Service)
+    WHERE b.id IN $serviceIds
+    RETURN a.id AS from, b.id AS to
+  `;
+
+  const result = await session.run(query, { serviceIds });
+
+  return result.records.map((record) => ({
+    from: record.get('from') as string,
+    to: record.get('to') as string,
+  }));
+}
