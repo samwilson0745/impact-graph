@@ -28,6 +28,12 @@ export function BlastRadiusView({
   onFocusService: (serviceId: string) => void;
 }) {
   const [maxHops, setMaxHops] = useState(4);
+  // The slider's own displayed value updates on every drag tick for smooth
+  // visual feedback; `maxHops` (which drives the query) only updates once
+  // the drag settles, via onValueCommitted — otherwise every intermediate
+  // tick during a drag fires a brand-new query, and the view flickers
+  // between the old result and a loading skeleton on each tick.
+  const [displayHops, setDisplayHops] = useState(4);
   const [showResources, setShowResources] = useState(true);
   const blastRadius = useBlastRadius(serviceId, maxHops);
 
@@ -44,14 +50,18 @@ export function BlastRadiusView({
               min={1}
               max={6}
               step={1}
-              value={[maxHops]}
+              value={[displayHops]}
               onValueChange={(v) => {
+                const next = Array.isArray(v) ? v[0] : v;
+                if (typeof next === 'number') setDisplayHops(next);
+              }}
+              onValueCommitted={(v) => {
                 const next = Array.isArray(v) ? v[0] : v;
                 if (typeof next === 'number') setMaxHops(next);
               }}
               className="w-28"
             />
-            <span className="w-4 text-sm font-medium tabular-nums">{maxHops}</span>
+            <span className="w-4 text-sm font-medium tabular-nums">{displayHops}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
