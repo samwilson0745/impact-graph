@@ -10,12 +10,17 @@ interface StatTileProps {
 
 export function StatTile({ icon: Icon, label, value, accentClassName }: StatTileProps) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border bg-card p-3">
-      <div className={cn('flex size-9 shrink-0 items-center justify-center rounded-md', accentClassName)}>
+    <div className="flex min-w-0 items-center gap-2.5 overflow-hidden rounded-lg border bg-card p-3">
+      <div
+        className={cn(
+          'flex size-9 shrink-0 items-center justify-center rounded-md',
+          accentClassName,
+        )}
+      >
         <Icon className="size-4.5" />
       </div>
       <div className="min-w-0">
-        <p className="text-xl font-semibold leading-none tabular-nums">{value}</p>
+        <p className="truncate text-xl font-semibold leading-none tabular-nums">{value}</p>
         <p className="truncate text-xs text-muted-foreground">{label}</p>
       </div>
     </div>

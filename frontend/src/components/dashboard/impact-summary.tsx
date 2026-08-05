@@ -28,7 +28,7 @@ export function ImpactSummary({ result }: { result: BlastRadiusResult }) {
     <div className="flex flex-col gap-4">
       <p className="text-sm leading-relaxed">{summarySentence(result)}</p>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <StatTile
           icon={Boxes}
           label="Services affected"
