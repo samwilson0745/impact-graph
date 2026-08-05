@@ -1,6 +1,6 @@
 'use client';
 
-import { Trophy } from 'lucide-react';
+import { ArrowRight, Trophy } from 'lucide-react';
 import { ErrorState } from '@/components/shared/error-state';
 import { TierDot } from '@/components/shared/tier-dot';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,7 @@ export function LeaderboardView({ onFocusService }: { onFocusService: (serviceId
             <TableHead>Service</TableHead>
             <TableHead>Tier</TableHead>
             <TableHead className="text-right">Direct dependents</TableHead>
-            <TableHead className="w-10" />
+            <TableHead />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -46,8 +46,9 @@ export function LeaderboardView({ onFocusService }: { onFocusService: (serviceId
               </TableCell>
               <TableCell className="text-right tabular-nums">{service.dependentCount}</TableCell>
               <TableCell>
-                <Button variant="ghost" size="sm" onClick={() => onFocusService(service.id)}>
+                <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onFocusService(service.id)}>
                   Analyze
+                  <ArrowRight className="size-3.5" />
                 </Button>
               </TableCell>
             </TableRow>

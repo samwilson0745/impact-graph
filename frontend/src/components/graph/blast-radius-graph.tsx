@@ -2,7 +2,7 @@
 
 import type cytoscape from 'cytoscape';
 import { useTheme } from 'next-themes';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { NodeDetailsCard } from '@/components/graph/node-details-card';
 import { buildBlastRadiusElements, buildStylesheet, withTierColors, type GraphNodeData } from '@/lib/build-graph-elements';
@@ -45,11 +45,26 @@ export function BlastRadiusGraph({ result, showResources, onFocusService }: Blas
     [result.service.id, showResources],
   );
 
+  // Deselect whenever the deploying service changes — the previous
+  // selection no longer refers to a node in the new graph.
+  useEffect(() => {
+    setSelected(null);
+  }, [result.service.id]);
+
+  // Stop any in-flight cose layout animation before this component
+  // unmounts (e.g. switching tabs mid-animation) — react-cytoscapejs
+  // destroys the underlying cy core on unmount, and a layout tick that
+  // fires after destroy throws deep inside cytoscape's renderer.
+  useEffect(() => {
+    return () => {
+      cyRef.current?.stop();
+    };
+  }, []);
+
   return (
     <div className="relative">
       <div className="h-[520px] w-full overflow-hidden rounded-lg border bg-card">
         <CytoscapeComponent
-          key={result.service.id}
           elements={elements}
           stylesheet={stylesheet}
           layout={layout}
